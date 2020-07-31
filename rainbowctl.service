@@ -1,0 +1,14 @@
+Description=Neopixel Control Service
+After=network.target
+
+[Service]
+ExecStart=/home/pi/rainbowctl
+WorkingDirectory=/home/pi/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
