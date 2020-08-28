@@ -11,7 +11,7 @@ const FIFO_PATH: &str = "/tmp/cava.fifo";
 fn main() -> std::io::Result<()> {
     let socket = UdpSocket::bind(("0.0.0.0", PORT)).expect("couldn't create UDP socket");
     socket
-        .connect(("192.168.1.130", PORT))
+        .connect(("192.168.1.4", PORT))
         .expect("couldn't connect to remote server");
 
     let mut fifo = BufReader::new(File::open(FIFO_PATH)?);

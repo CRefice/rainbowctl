@@ -137,7 +137,7 @@ pub async fn equalizer(mut data: PatternData) {
         lights.render(values.iter().map(|value| {
             let value = f32::from(*value) / (2.0 * f32::from(u8::MAX));
             let mut color = color;
-            color.lightness = value;
+            color.lightness = f32::powf(value, 2.2);
             color
         }))
     }
