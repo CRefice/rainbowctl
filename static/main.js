@@ -11,5 +11,7 @@ function changeColor(color) {
   });
 }
 
-var colorPicker = new iro.ColorPicker("#color-picker");
+var colorPicker = new iro.ColorPicker("#color-picker", {
+  color: "#f00",
+});
 colorPicker.on("color:change", changeColor);
