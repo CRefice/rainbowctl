@@ -1,11 +1,11 @@
 pub mod filters;
 pub mod patterns;
 
-pub use palette::Hsl as Color;
+pub use palette::LinSrgb as Color;
 pub use rs_ws281x::RawColor;
 
 use anyhow::Result;
-use palette::{named, ConvertInto, Pixel as _, Srgb};
+use palette::{Pixel as _, Srgb};
 use rs_ws281x::{ChannelBuilder, Controller, ControllerBuilder, StripType};
 use std::iter;
 use std::sync::Arc;
@@ -22,7 +22,7 @@ impl Lights {
                     .pin(18)
                     .count(24)
                     .strip_type(StripType::Ws2811Gbr)
-                    .brightness(255)
+                    .brightness(128)
                     .build(),
             )
             .build()?;
@@ -30,30 +30,23 @@ impl Lights {
     }
 
     pub fn off(&mut self) {
-        self.fill(named::BLACK);
+        self.fill(Srgb::new(0.0, 0.0, 0.0).into_linear());
     }
 
     pub fn led_count(&self) -> usize {
         self.0.leds(0).len()
     }
 
-    pub fn fill<C, T>(&mut self, color: C)
-    where
-        C: ConvertInto<Srgb<T>> + Clone,
-        T: palette::Component,
-    {
-        self.render(iter::repeat(color));
+    pub fn fill(&mut self, color: impl Into<Color>) {
+        self.render(iter::repeat(color.into()));
     }
 
-    pub fn render<I, C, T>(&mut self, colors: I)
+    pub fn render<I>(&mut self, colors: I)
     where
-        I: IntoIterator<Item = C>,
-        C: ConvertInto<Srgb<T>>,
-        T: palette::Component,
+        I: IntoIterator<Item = Color>,
     {
         for (led, color) in self.0.leds_mut(0).iter_mut().zip(colors) {
-            let color = color.convert_into().into_format();
-            let buf: [u8; 3] = color.into_raw();
+            let buf: [u8; 3] = Srgb::from_linear(color).into_format().into_raw();
             led[0..3].copy_from_slice(&buf);
         }
         self.0.render().unwrap();
